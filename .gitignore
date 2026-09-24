@@ -19,3 +19,4 @@ __pycache__/
 .idea/
 Thumbs.db
 .DS_Store
+data/processed/skills.parquet

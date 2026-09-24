@@ -41,6 +41,7 @@ tests/
 - Environment: `.venv` on Python 3.14 (3.11 wasn't available as a normal Windows install). Versions are pinned in `requirements.txt`.
 - Limited RAM: use Parquet, compact dtypes (category, float32), and filtered subsets.
 - Format with `black`, lint with `ruff`, test with `pytest`.
+- Charts use `src/viz.py`: `set_style()`, `barh()`, `save()`. Seniority colors are fixed (Entry blue, Mid orange, Senior aqua). Work type uses its own trio (violet/pink/green). Both are colorblind-validated.
 - Work one phase at a time. At the end of each phase: run everything, summarize (what was built, key numbers, surprises, next step), make a small commit, and wait for the OK.
 - For real trade-offs, present the options instead of picking silently.
 - Git: the author is `Xyrus <xyrusdimacali@gmail.com>` only. No AI co-author trailers. Short imperative commit subjects.
@@ -49,8 +50,8 @@ tests/
 
 - [x] **Phase 1: Setup and data overview.** Repo, venv, requirements, .gitignore, `download.py`, `01_data_overview.ipynb`
 - [x] **Phase 2: Cleaning.** Joins, tech-title filter, dedupe, text cleaning, yearly salary + IQR, location/work type, seniority labels, `jobs.parquet`, tests
-- [ ] **Phase 3: EDA.** 10–15 charts with takeaways, key findings
-- [ ] **Phase 4: Features.** Skills extractor, TF-IDF, hand-crafted features, Pipeline/ColumnTransformer
+- [x] **Phase 3: EDA.** 10–15 charts with takeaways, key findings
+- [ ] **Phase 4: Features.** Skills extractor (done early, in Phase 3) + years/keyword flags (done), TF-IDF, hand-crafted features, Pipeline/ColumnTransformer
 - [ ] **Phase 5: Seniority classifier.** Baseline, LR/SVM/XGB CV, tuning, with/without title, explainability, error analysis
 - [ ] **Phase 6: Role clustering.** TF-IDF → SVD → KMeans, choose k, name clusters, 2D plot, per-cluster profiles
 - [ ] **Phase 7: Streamlit dashboard.** 4 pages, caching, committed sample, deployment steps
@@ -66,3 +67,5 @@ tests/
 - The tech filter favors precision. It drops ambiguous titles (test/application engineer, technical lead, business analyst). It keeps IT support (help desk, desktop support).
 - Seniority mapping **C** (chosen): Intern + Entry + Associate → Entry (2,316), Mid-Senior → Mid (4,601), Director + Executive → Senior (191). Options A–D are compared in `02_cleaning.ipynb`. Salary outliers use IQR with k=1.5 (chosen).
 - `work_type`: "on-site" means "not stated as remote or hybrid". There is no explicit on-site flag.
+- `src/features/skills.py` (166 regex skills) and `text.py` (years + keyword flags) were built in Phase 3 because the EDA needed them. The skill matrix takes ~80s on 4 cores, so it is cached in `data/processed/skills.parquet` (git-ignored; delete it after changing patterns).
+- EDA: 55% of postings were listed on Apr 18–19, 2024, so there are no trend claims. Entry descriptions are full of IT-support terms and staffing-agency names (Dice, TEKsystems). Watch for boilerplate leakage in Phase 5.
