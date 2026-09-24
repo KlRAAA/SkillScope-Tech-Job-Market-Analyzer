@@ -1,5 +1,6 @@
 # Data (raw data is downloaded, never committed)
 data/raw/
+data/processed/jobs.parquet
 
 # Secrets
 kaggle.json

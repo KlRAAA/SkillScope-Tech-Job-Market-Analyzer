@@ -15,7 +15,7 @@ Find which skills are in demand, how requirements differ by seniority and locati
 
 - Kaggle `arshkon/linkedin-job-postings` (~124k postings). Download: `python -m src.data.download`.
 - Credentials live in `~/.kaggle/kaggle.json` only. Never put API keys in the repo or chat.
-- `data/raw/` is git-ignored. The processed output is `data/processed/jobs.parquet`, and a small (<50 MB) app sample is committed.
+- `data/raw/` and `data/processed/jobs.parquet` are git-ignored (rebuild with `python -m src.data.clean`). A small (<50 MB) app sample will be committed.
 - Never assume column names. Inspect the files first (see `notebooks/01_data_overview.ipynb`).
 
 ## Structure
@@ -48,7 +48,7 @@ tests/
 ## Phase checklist
 
 - [x] **Phase 1: Setup and data overview.** Repo, venv, requirements, .gitignore, `download.py`, `01_data_overview.ipynb`
-- [ ] **Phase 2: Cleaning.** Joins, tech-title filter, dedupe, text cleaning, yearly salary + IQR, location/work type, seniority labels, `jobs.parquet`, tests
+- [x] **Phase 2: Cleaning.** Joins, tech-title filter, dedupe, text cleaning, yearly salary + IQR, location/work type, seniority labels, `jobs.parquet`, tests
 - [ ] **Phase 3: EDA.** 10–15 charts with takeaways, key findings
 - [ ] **Phase 4: Features.** Skills extractor, TF-IDF, hand-crafted features, Pipeline/ColumnTransformer
 - [ ] **Phase 5: Seniority classifier.** Baseline, LR/SVM/XGB CV, tuning, with/without title, explainability, error analysis
@@ -62,3 +62,7 @@ tests/
 - Postings are almost all from April 2024 (listed ~2024-03-24 → 2024-04-20). Time trends are limited to ~4 weeks.
 - `formatted_experience_level` is missing for 23.7%. With the spec mapping, Senior (Director + Executive) is only ~5% of labeled rows.
 - `remote_allowed` is `1` or NaN only. `normalized_salary` exists but has absurd outliers, so we normalize ourselves.
+- Phase 2 funnel: 123,849 raw → 10,820 tech titles → 10,040 after dedupe. Salary is known for 2,899 (28.9%). IQR fences are $6.6k–$260k (k=1.5).
+- The tech filter favors precision. It drops ambiguous titles (test/application engineer, technical lead, business analyst). It keeps IT support (help desk, desktop support).
+- The spec's seniority mapping (A) gives Entry 1,650 / Mid 5,267 / Senior 191. Alternatives B–D are compared in `02_cleaning.ipynb`.
+- `work_type`: "on-site" means "not stated as remote or hybrid". There is no explicit on-site flag.
