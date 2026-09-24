@@ -1,0 +1,29 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: app/requirements.txt
+
+      # The app's runtime dependencies are enough for the tests (no Jupyter or SHAP).
+      - name: Install dependencies
+        run: pip install -r app/requirements.txt pytest==9.1.1 black==26.5.1 ruff==0.16.8
+
+      - name: Lint
+        run: |
+          ruff check src app tests notebooks
+          black --check src app tests
+
+      - name: Test
+        run: pytest -q

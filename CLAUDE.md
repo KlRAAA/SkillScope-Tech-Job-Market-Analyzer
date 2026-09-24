@@ -56,7 +56,7 @@ tests/
 - [x] **Phase 5: Seniority classifier.** Baseline, LR/SVM/XGB CV, tuning, with/without title, explainability, error analysis
 - [x] **Phase 6: Role clustering.** TF-IDF → SVD → KMeans, choose k, name clusters, 2D plot, per-cluster profiles
 - [x] **Phase 7: Streamlit dashboard.** 4 pages, caching, committed sample, deployment steps
-- [ ] **Phase 8: Polish.** README, black/ruff, CI with pytest, interview talking points
+- [x] **Phase 8: Polish.** README, black/ruff, CI with pytest, interview talking points
 
 ## Notes / decisions log
 
@@ -77,3 +77,4 @@ tests/
 - Phase 6: 10 role clusters (title ×3 + description → TF-IDF with HR-boilerplate stop words → SVD 100 → L2 → KMeans, `python -m src.models.train_clusters`, ~2 min). Without the boilerplate stop words, 2 clusters formed around equal-opportunity templates. k=10 was chosen for interpretability plus the largest silhouette gain (8 → 10). Silhouette is low (~0.05) and keeps rising to k=15, so there is no natural k. Names are in `CLUSTER_NAMES` with a signature-term check. `models/clusters.joblib` is 7.6 MB.
 - `extract_years` bug (fixed in Phase 7): "0-2 years" used to return NaN, because 0 was dropped as noise. It now returns 0. Features were rebuilt and the classifier retrained.
 - Phase 7 app: `streamlit run app/streamlit_app.py` (4 pages via `st.navigation`). Analyzer logic is in `src/models/predict.py`. Deployment uses the lean `app/requirements.txt` (verified in a clean venv). The theme is in `.streamlit/config.toml`. Known model limitation shown in the app: "mentorship from senior analysts" pushes an entry posting to Mid (bag-of-words has no context).
+- Phase 8: README (with Mermaid pipeline, results, screenshots), CI in `.github/workflows/tests.yml` (Python 3.14, app requirements + pytest/black/ruff). Screenshots in `reports/screenshots/` were captured from the running app with headless Edge via the DevTools protocol. `app_sample.py` now builds `skills.parquet` itself if it is missing. The README's live-app link is still a placeholder until deployment.

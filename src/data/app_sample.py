@@ -4,7 +4,7 @@ The app never needs full descriptions, so it gets every tech posting with
 the columns the dashboard uses, the role cluster, and the 0/1 skill flags.
 Size is a few MB, well under the 50 MB budget.
 
-Usage (after clean, features and clustering have run):
+Usage (after clean and clustering have run):
     python -m src.data.app_sample
 """
 
@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.features.skills import SKILL_NAMES, skill_column
+from src.features.skills import SKILL_NAMES, skill_column, skill_matrix
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PROCESSED = PROJECT_ROOT / "data" / "processed"
@@ -25,10 +25,22 @@ COLUMNS = [
 ]  # fmt: skip
 
 
+def load_skill_matrix(jobs: pd.DataFrame) -> pd.DataFrame:
+    """Skill flags on title + description, cached in skills.parquet (~1-2 min to build)."""
+    path = PROCESSED / "skills.parquet"
+    if path.exists():
+        skills = pd.read_parquet(path)
+        if len(skills) == len(jobs):
+            return skills
+    skills = skill_matrix(jobs["title"] + " " + jobs["description_clean"])
+    skills.to_parquet(path)
+    return skills
+
+
 def build() -> pd.DataFrame:
     jobs = pd.read_parquet(PROCESSED / "jobs.parquet")
     clusters = pd.read_parquet(PROCESSED / "clusters.parquet")
-    skills = pd.read_parquet(PROCESSED / "skills.parquet")
+    skills = load_skill_matrix(jobs)
     assert (clusters["job_id"].to_numpy() == jobs["job_id"].to_numpy()).all()
     assert len(skills) == len(jobs)
 
