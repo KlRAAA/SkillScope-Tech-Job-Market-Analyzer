@@ -1,0 +1,30 @@
+# Data
+pandas==3.0.6
+numpy==2.5.3
+pyarrow==25.0.1
+kaggle==2.2.4
+
+# Visualization
+matplotlib==3.11.2
+seaborn==0.13.2
+plotly==7.1.0
+wordcloud==1.9.6
+
+# ML / NLP
+scikit-learn==1.9.1
+xgboost==3.4.1
+imbalanced-learn==0.14.2
+nltk==3.10.3
+joblib==1.6.0
+shap==0.52.0
+
+# App
+streamlit==1.64.0
+
+# Dev
+jupyter==1.1.1
+nbconvert==7.17.1
+ipykernel==7.3.0
+pytest==9.1.1
+black==26.5.1
+ruff==0.16.8

@@ -1,0 +1,20 @@
+# Data (raw data is downloaded, never committed)
+data/raw/
+
+# Secrets
+kaggle.json
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
