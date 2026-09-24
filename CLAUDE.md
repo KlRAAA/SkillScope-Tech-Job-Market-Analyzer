@@ -25,7 +25,8 @@ data/raw/            git-ignored Kaggle files
 data/processed/      jobs.parquet + small app sample
 notebooks/           01_data_overview, 02_cleaning, 03_eda, 04_seniority_model, 05_role_clustering
 src/data/            download.py, clean.py
-src/features/        text.py, skills.py
+src/features/        text.py, skills.py, pipeline.py
+src/viz.py           shared chart style
 src/models/          train_classifier.py, train_clusters.py, predict.py
 models/              saved .joblib pipelines
 reports/figures/     exported charts
