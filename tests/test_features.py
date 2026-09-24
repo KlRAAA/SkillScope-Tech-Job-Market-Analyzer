@@ -2,9 +2,22 @@ import math
 
 import pandas as pd
 import pytest
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
 
+from src.features.pipeline import (
+    build_features,
+    make_full_pipeline,
+    make_preprocessor,
+    skill_columns,
+)
 from src.features.skills import SKILL_NAMES, extract_skills, skill_column, skill_matrix
-from src.features.text import extract_years, keyword_flags
+from src.features.text import (
+    extract_years,
+    keyword_flags,
+    model_text,
+    remove_company,
+)
 
 # --- Skills -----------------------------------------------------------------------
 
@@ -93,3 +106,81 @@ def test_keyword_flags():
         1,
         0,
     ]
+
+
+# --- Feature pipeline ----------------------------------------------------------------
+
+
+def test_remove_company_is_case_insensitive_and_whole_phrase():
+    text = "Join TEKsystems today! teksystems rocks. TEKsystemsX stays."
+    assert (
+        remove_company(text, "TEKsystems")
+        == "Join   today!   rocks. TEKsystemsX stays."
+    )
+    assert remove_company(text, None) == text
+
+
+def test_model_text_can_exclude_title():
+    text = model_text(
+        "Senior Engineer", "Build <b>APIs</b> at Acme", "Acme", include_title=False
+    )
+    assert "Senior" not in text
+    assert "Acme" not in text
+    assert "Build APIs" in text
+
+
+def _toy_postings():
+    return pd.DataFrame(
+        {
+            "title": [
+                "Senior Python Engineer",
+                "Junior Web Developer",
+                "Director of AI",
+                "Intern",
+            ]
+            * 3,
+            "description": [
+                "Lead and mentor a team. 7+ years of experience with Python and AWS.",
+                "Entry level role. 1 year of experience with JavaScript and React.",
+                "Set strategy for machine learning. 10 years of experience required.",
+                "Summer internship for students learning SQL.",
+            ]
+            * 3,
+            "company_name": ["Acme", "Globex", "Initech", "Acme"] * 3,
+        }
+    )
+
+
+def test_build_features_without_title_has_no_title_signal():
+    df = _toy_postings()
+    with_title = build_features(df, include_title=True, n_jobs=1)
+    without_title = build_features(df, include_title=False, n_jobs=1)
+    assert (
+        with_title.loc[3, "kw_intern"] == 1
+    )  # from the title "Intern" (and description)
+    assert "Senior" in with_title.loc[0, "text"]
+    assert "Senior" not in without_title.loc[0, "text"]
+    assert without_title.loc[0, "years_required"] == 7
+    assert without_title.loc[0, "skill_python"] == 1
+
+
+def test_full_pipeline_predicts_from_raw_rows():
+    df = _toy_postings()
+    y = ["Senior", "Entry", "Senior", "Entry"] * 3
+    features = build_features(df, n_jobs=1)
+    model = Pipeline(
+        [
+            ("preprocess", make_preprocessor(skill_columns(features), min_df=1)),
+            ("clf", LogisticRegression(max_iter=1000)),
+        ]
+    ).fit(features, y)
+    full = make_full_pipeline(model)
+    new = pd.DataFrame(
+        {
+            "title": ["Intern"],
+            "description": ["Internship for students"],
+            "company_name": [None],
+        }
+    )
+    assert full.predict(new)[0] in {"Entry", "Senior"}
+    assert full.predict_proba(new).shape == (1, 2)

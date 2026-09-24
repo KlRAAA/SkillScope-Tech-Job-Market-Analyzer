@@ -1,12 +1,62 @@
-"""Text features: years of experience required and seniority keyword flags.
-
-TF-IDF and the sklearn pipeline are added in Phase 4.
-"""
+"""Text features: cleaning for models, TF-IDF, years of experience, keyword flags."""
 
 import re
 
 import numpy as np
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+from src.data.clean import clean_text
+
+# Tokens keep '+', '#' and inner dots so "c++", "c#" and "node.js" survive.
+TOKEN_PATTERN = r"(?u)\b[a-z][a-z0-9+#]*(?:\.[a-z]+)?"
+
+
+def remove_company(text: str, company: str | None) -> str:
+    """Remove the posting's own company name from its text.
+
+    Some companies label almost all their postings one way (e.g. a staffing
+    agency posting mostly Entry roles), so a model could learn the company
+    instead of the seniority. Case-insensitive, whole-phrase match.
+    """
+    if not isinstance(text, str):
+        return ""
+    if not isinstance(company, str) or len(company.strip()) < 2:
+        return text
+    return re.sub(
+        rf"(?<!\w){re.escape(company.strip())}(?!\w)", " ", text, flags=re.IGNORECASE
+    )
+
+
+def model_text(title: str | None, description: str | None, company: str | None = None,
+               include_title: bool = True) -> str:  # fmt: skip
+    """The text the models see: [title +] cleaned description, company name removed.
+
+    Case is kept because some skill patterns are case-sensitive ("Go", "React").
+    TF-IDF lowercases on its own.
+    """
+    parts = [title, description] if include_title else [description]
+    text = " ".join(clean_text(p) for p in parts if isinstance(p, str))
+    return remove_company(text, company)
+
+
+def make_tfidf(max_features: int = 20_000, min_df: int = 5) -> TfidfVectorizer:
+    """TF-IDF over 1-2 word phrases.
+
+    sublinear_tf dampens repeated words in long descriptions, and max_df drops
+    boilerplate that appears in most postings (EEO statements, benefits).
+    """
+    return TfidfVectorizer(
+        ngram_range=(1, 2),
+        min_df=min_df,
+        max_df=0.8,
+        max_features=max_features,
+        stop_words="english",
+        sublinear_tf=True,
+        token_pattern=TOKEN_PATTERN,
+        dtype=np.float32,
+    )
+
 
 _NUMBER_WORDS = {
     "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,

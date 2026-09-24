@@ -51,7 +51,7 @@ tests/
 - [x] **Phase 1: Setup and data overview.** Repo, venv, requirements, .gitignore, `download.py`, `01_data_overview.ipynb`
 - [x] **Phase 2: Cleaning.** Joins, tech-title filter, dedupe, text cleaning, yearly salary + IQR, location/work type, seniority labels, `jobs.parquet`, tests
 - [x] **Phase 3: EDA.** 10–15 charts with takeaways, key findings
-- [ ] **Phase 4: Features.** Skills extractor (done early, in Phase 3) + years/keyword flags (done), TF-IDF, hand-crafted features, Pipeline/ColumnTransformer
+- [x] **Phase 4: Features.** Skills extractor, years/keyword flags, TF-IDF, company-name removal, `src/features/pipeline.py` (build_features + ColumnTransformer + full pipeline)
 - [ ] **Phase 5: Seniority classifier.** Baseline, LR/SVM/XGB CV, tuning, with/without title, explainability, error analysis
 - [ ] **Phase 6: Role clustering.** TF-IDF → SVD → KMeans, choose k, name clusters, 2D plot, per-cluster profiles
 - [ ] **Phase 7: Streamlit dashboard.** 4 pages, caching, committed sample, deployment steps
@@ -69,3 +69,5 @@ tests/
 - `work_type`: "on-site" means "not stated as remote or hybrid". There is no explicit on-site flag.
 - `src/features/skills.py` (166 regex skills) and `text.py` (years + keyword flags) were built in Phase 3 because the EDA needed them. The skill matrix takes ~80s on 4 cores, so it is cached in `data/processed/skills.parquet` (git-ignored; delete it after changing patterns).
 - EDA: 55% of postings were listed on Apr 18–19, 2024, so there are no trend claims. Entry descriptions are full of IT-support terms and staffing-agency names (Dice, TEKsystems). Watch for boilerplate leakage in Phase 5.
+- Features have two stages. `build_features()` is stateless (text, skills, years, flags, length) and cached in `data/processed/features.parquet` with/without-title versions (`python -m src.features.pipeline`, ~3 min). `make_preprocessor()` holds the fitted parts (TF-IDF, imputer, scaler) and is fitted on train only. `make_full_pipeline()` makes the saved model accept raw title/description rows.
+- Company-name leakage: 54% of descriptions contain their own company name, and some companies label almost all postings one way (TEKsystems 83% Entry, Motion Recruitment 94% Mid). Each posting's company name is removed from its text.
