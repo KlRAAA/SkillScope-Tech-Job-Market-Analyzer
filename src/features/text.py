@@ -113,13 +113,14 @@ def extract_years(text: str | None) -> float:
 
     Takes the lower bound of each "N years ... experience" mention and returns
     the smallest one, which is usually the hard requirement ("3+ years
-    required, 5+ preferred" -> 3). Values above 20 are ignored as noise
-    (e.g. "our 25 years of experience in the industry").
+    required, 5+ preferred" -> 3). "0-2 years" gives 0, a strong entry-level
+    signal. Values above 20 are ignored as noise (e.g. "our 25 years of
+    experience in the industry").
     """
     if not isinstance(text, str):
         return np.nan
     values = [_to_int(m.group(1)) for m in _YEARS_RE.finditer(text)]
-    values = [v for v in values if 0 < v <= MAX_REASONABLE_YEARS]
+    values = [v for v in values if 0 <= v <= MAX_REASONABLE_YEARS]
     return float(min(values)) if values else np.nan
 
 

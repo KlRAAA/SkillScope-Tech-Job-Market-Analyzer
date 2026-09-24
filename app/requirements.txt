@@ -1,0 +1,12 @@
+# Runtime dependencies for Streamlit Community Cloud (it uses the file next to the app).
+# Versions match the environment the models were trained in; scikit-learn and
+# xgboost must match exactly to load the pickled pipelines.
+streamlit==1.64.0
+pandas==3.0.6
+numpy==2.5.3
+pyarrow==25.0.1
+scikit-learn==1.9.1
+xgboost==3.4.1
+joblib==1.6.0
+plotly==7.1.0
+matplotlib==3.11.2

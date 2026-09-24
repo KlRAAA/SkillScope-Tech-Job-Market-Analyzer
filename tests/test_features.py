@@ -84,6 +84,7 @@ def test_skill_matrix_shape_and_counts():
         ("two (2) years of professional experience", 2),
         ("At least 2 yrs. experience", 2),
         ("3 years experience required; 5+ years preferred experience", 3),
+        ("0-2 years of experience", 0),
     ],
 )
 def test_extract_years(text, expected):

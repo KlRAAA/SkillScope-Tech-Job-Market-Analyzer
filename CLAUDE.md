@@ -15,7 +15,7 @@ Find which skills are in demand, how requirements differ by seniority and locati
 
 - Kaggle `arshkon/linkedin-job-postings` (~124k postings). Download: `python -m src.data.download`.
 - Credentials live in `~/.kaggle/kaggle.json` only. Never put API keys in the repo or chat.
-- `data/raw/` and `data/processed/jobs.parquet` are git-ignored (rebuild with `python -m src.data.clean`). A small (<50 MB) app sample will be committed.
+- `data/raw/` and `data/processed/jobs.parquet` are git-ignored (rebuild with `python -m src.data.clean`). The app sample `data/processed/app_jobs.parquet` (0.5 MB, all postings without descriptions + skill flags + cluster) is committed. Rebuild it with `python -m src.data.app_sample`.
 - Never assume column names. Inspect the files first (see `notebooks/01_data_overview.ipynb`).
 
 ## Structure
@@ -55,7 +55,7 @@ tests/
 - [x] **Phase 4: Features.** Skills extractor, years/keyword flags, TF-IDF, company-name removal, `src/features/pipeline.py` (build_features + ColumnTransformer + full pipeline)
 - [x] **Phase 5: Seniority classifier.** Baseline, LR/SVM/XGB CV, tuning, with/without title, explainability, error analysis
 - [x] **Phase 6: Role clustering.** TF-IDF → SVD → KMeans, choose k, name clusters, 2D plot, per-cluster profiles
-- [ ] **Phase 7: Streamlit dashboard.** 4 pages, caching, committed sample, deployment steps
+- [x] **Phase 7: Streamlit dashboard.** 4 pages, caching, committed sample, deployment steps
 - [ ] **Phase 8: Polish.** README, black/ruff, CI with pytest, interview talking points
 
 ## Notes / decisions log
@@ -72,6 +72,8 @@ tests/
 - EDA: 55% of postings were listed on Apr 18–19, 2024, so there are no trend claims. Entry descriptions are full of IT-support terms and staffing-agency names (Dice, TEKsystems). Watch for boilerplate leakage in Phase 5.
 - Features have two stages. `build_features()` is stateless (text, skills, years, flags, length) and cached in `data/processed/features.parquet` with/without-title versions (`python -m src.features.pipeline`, ~3 min). `make_preprocessor()` holds the fitted parts (TF-IDF, imputer, scaler) and is fitted on train only. `make_full_pipeline()` makes the saved model accept raw title/description rows.
 - Company-name leakage: 54% of descriptions contain their own company name, and some companies label almost all postings one way (TEKsystems 83% Entry, Motion Recruitment 94% Mid). Each posting's company name is removed from its text.
-- Phase 5 (grouped-by-company split, chosen): XGBoost (depth 4, 200 trees, top 3k TF-IDF terms + hand-crafted features) reaches **0.582 test macro F1** vs. a 0.262 baseline (CV 0.575). LR and SVM tie at ~0.54. Without the title: 0.567 test / 0.528 CV. Senior recall is 32% (12/38). Full training takes ~40 min (`python -m src.models.train_classifier`).
+- Phase 5 (grouped-by-company split, chosen): XGBoost (depth 6, 200 trees, top 3k TF-IDF terms + hand-crafted features) reaches **0.607 test macro F1 / 0.567 CV** vs. a 0.262 baseline. LR and SVM tie at ~0.54. Without the title: 0.548 test / 0.502 CV, so the title is worth ~0.06. Run-to-run noise is ~±0.03 (the first run scored 0.582 test / 0.575 CV; the only change was a parser fix affecting 42 postings), because the test set has only 38 Senior postings. Senior recall is 32%, precision 80%. Full training takes ~40 min (`python -m src.models.train_classifier`).
 - Custom estimators must live in `src/models/estimators.py`, not in a script run with `-m`. Otherwise they are pickled as `__main__.X` and cannot be loaded (this happened once, and the models were re-saved).
 - Phase 6: 10 role clusters (title ×3 + description → TF-IDF with HR-boilerplate stop words → SVD 100 → L2 → KMeans, `python -m src.models.train_clusters`, ~2 min). Without the boilerplate stop words, 2 clusters formed around equal-opportunity templates. k=10 was chosen for interpretability plus the largest silhouette gain (8 → 10). Silhouette is low (~0.05) and keeps rising to k=15, so there is no natural k. Names are in `CLUSTER_NAMES` with a signature-term check. `models/clusters.joblib` is 7.6 MB.
+- `extract_years` bug (fixed in Phase 7): "0-2 years" used to return NaN, because 0 was dropped as noise. It now returns 0. Features were rebuilt and the classifier retrained.
+- Phase 7 app: `streamlit run app/streamlit_app.py` (4 pages via `st.navigation`). Analyzer logic is in `src/models/predict.py`. Deployment uses the lean `app/requirements.txt` (verified in a clean venv). The theme is in `.streamlit/config.toml`. Known model limitation shown in the app: "mentorship from senior analysts" pushes an entry posting to Mid (bag-of-words has no context).
