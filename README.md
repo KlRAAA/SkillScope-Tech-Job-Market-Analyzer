@@ -4,7 +4,7 @@
 
 An end-to-end data analysis and machine learning project on **10,040 US tech job postings** from LinkedIn (April 2024). It answers which skills are in demand, how requirements and pay differ by seniority, role and location, and ships a **Streamlit app** that analyzes any pasted job description.
 
-**Live app:** _link added after deployment_
+**Live app:** https://skillscope-tech-job-market-analyzer.streamlit.app
 
 ![Job description analyzer](reports/screenshots/analyzer.png)
 

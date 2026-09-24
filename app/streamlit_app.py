@@ -79,6 +79,11 @@ def style(fig: go.Figure, height: int = 420) -> go.Figure:
     return fig
 
 
+def show(fig: go.Figure) -> None:
+    """Render a chart without Plotly's hover toolbar, which overlaps chart titles."""
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+
+
 def filter_row(df: pd.DataFrame, key: str, show_state: bool = True) -> pd.DataFrame:
     """One row of filters above the charts. Empty selection means 'all'."""
     cols = st.columns(3 if show_state else 2)
@@ -161,7 +166,7 @@ def overview_page():
             hovertemplate="%{x|%a %b %d}: %{y:,} postings<extra></extra>",
         )
         fig.update_layout(xaxis_title=None, yaxis_title="Postings")
-        st.plotly_chart(style(fig, 380), use_container_width=True)
+        show(style(fig, 380))
         st.caption(
             "The daily counts show when the data was collected, not hiring demand: 55% of postings were "
             "listed on April 18–19. Use this dataset for comparisons, not trends."
@@ -185,7 +190,7 @@ def overview_page():
             marker_color=viz.BLUE, hovertemplate="%{y}: %{x:,} postings<extra></extra>"
         )
         fig.update_layout(xaxis_title="Postings", yaxis_title=None)
-        st.plotly_chart(style(fig, 380), use_container_width=True)
+        show(style(fig, 380))
 
     with st.expander("About the data and its limitations"):
         st.markdown("""
@@ -238,7 +243,7 @@ def skills_page():
         xaxis_title="% of postings mentioning the skill",
         yaxis_title=None,
     )
-    st.plotly_chart(style(fig, 28 * top_n + 90), use_container_width=True)
+    show(style(fig, 28 * top_n + 90))
 
     with st.expander("Table view"):
         st.dataframe(
@@ -282,7 +287,7 @@ def salary_page():
             showlegend=False,
         )
         fig.update_xaxes(tickformat="$,.0s")
-        st.plotly_chart(style(fig, 360), use_container_width=True)
+        show(style(fig, 360))
 
     with right:
         by_role = sal.groupby("cluster", observed=True)["salary_yearly"].agg(
@@ -307,7 +312,7 @@ def salary_page():
             yaxis_title=None,
         )
         fig.update_xaxes(tickformat="$,.0s")
-        st.plotly_chart(style(fig, 360), use_container_width=True)
+        show(style(fig, 360))
 
     st.subheader("Location")
     min_n = st.slider(
@@ -332,7 +337,7 @@ def salary_page():
         fig.update_layout(
             title="Postings by state (top 15)", xaxis_title="Postings", yaxis_title=None
         )
-        st.plotly_chart(style(fig, 460), use_container_width=True)
+        show(style(fig, 460))
     with right:
         by_state = sal.groupby("state", observed=True)["salary_yearly"].agg(
             ["median", "size"]
@@ -357,7 +362,7 @@ def salary_page():
                 yaxis_title=None,
             )
             fig.update_xaxes(tickformat="$,.0s")
-            st.plotly_chart(style(fig, 460), use_container_width=True)
+            show(style(fig, 460))
 
     work = (
         df["work_type"]
@@ -391,7 +396,7 @@ def salary_page():
         yaxis_title=None,
     )
     fig.update_xaxes(range=[0, 100])
-    st.plotly_chart(style(fig, 200), use_container_width=True)
+    show(style(fig, 200))
     st.caption(
         '"On-site" means the posting is not marked remote and does not mention hybrid work.'
     )
@@ -478,7 +483,7 @@ def analyzer_page():
         )
         fig.update_xaxes(range=[0, 110])
         fig.update_yaxes(autorange="reversed")
-        st.plotly_chart(style(fig, 240), use_container_width=True)
+        show(style(fig, 240))
     with right:
         st.markdown("**Skills mentioned**")
         if result.skills:
