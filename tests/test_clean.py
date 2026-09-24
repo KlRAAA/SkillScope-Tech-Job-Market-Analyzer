@@ -89,7 +89,7 @@ def test_map_seniority_default_mapping():
             "Unknown",
         ]
     )
-    expected = ["Entry", "Entry", "Mid", "Mid", "Senior", "Senior", np.nan, np.nan]
+    expected = ["Entry", "Entry", "Entry", "Mid", "Senior", "Senior", np.nan, np.nan]
     assert map_seniority(levels).tolist() == pytest.approx(expected, nan_ok=True)
 
 

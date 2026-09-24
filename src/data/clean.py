@@ -318,10 +318,12 @@ def work_type(
 # Seniority label
 # ---------------------------------------------------------------------------
 
+# Associate (typically 1-3 years of experience) is grouped with Entry. The original
+# plan put it in Mid, which made Mid 74% of labeled rows (see 02_cleaning.ipynb).
 SENIORITY_MAP = {
     "Internship": "Entry",
     "Entry level": "Entry",
-    "Associate": "Mid",
+    "Associate": "Entry",
     "Mid-Senior level": "Mid",
     "Director": "Senior",
     "Executive": "Senior",

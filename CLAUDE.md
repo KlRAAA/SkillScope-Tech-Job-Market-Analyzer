@@ -64,5 +64,5 @@ tests/
 - `remote_allowed` is `1` or NaN only. `normalized_salary` exists but has absurd outliers, so we normalize ourselves.
 - Phase 2 funnel: 123,849 raw → 10,820 tech titles → 10,040 after dedupe. Salary is known for 2,899 (28.9%). IQR fences are $6.6k–$260k (k=1.5).
 - The tech filter favors precision. It drops ambiguous titles (test/application engineer, technical lead, business analyst). It keeps IT support (help desk, desktop support).
-- The spec's seniority mapping (A) gives Entry 1,650 / Mid 5,267 / Senior 191. Alternatives B–D are compared in `02_cleaning.ipynb`.
+- Seniority mapping **C** (chosen): Intern + Entry + Associate → Entry (2,316), Mid-Senior → Mid (4,601), Director + Executive → Senior (191). Options A–D are compared in `02_cleaning.ipynb`. Salary outliers use IQR with k=1.5 (chosen).
 - `work_type`: "on-site" means "not stated as remote or hybrid". There is no explicit on-site flag.
