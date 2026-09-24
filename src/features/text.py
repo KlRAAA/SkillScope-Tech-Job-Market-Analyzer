@@ -40,6 +40,35 @@ def model_text(title: str | None, description: str | None, company: str | None =
     return remove_company(text, company)
 
 
+# HR boilerplate and generic business words. Without these, clustering groups
+# postings by their equal-opportunity/benefits templates instead of by role.
+BOILERPLATE_STOP_WORDS = """
+status employment employer employers employee employees benefits benefit disability disabilities
+gender identity expression equal opportunity opportunities protected veteran veterans race religion
+sex sexual orientation national origin color age marital pregnancy genetic information applicants
+applicant accommodation accommodations eeo affirmative action discrimination law laws regard
+regardless qualified consideration pay salary compensation range bonus insurance dental vision
+medical 401k pto paid time off holidays wellness perks company companies culture inclusive diversity
+inclusion apply application hiring hire recruiting recruiter candidate candidates position positions
+job jobs role roles join team teams w2 c2c contract duration month months location onsite remote
+hybrid description title requirements required preferred qualifications responsibilities including
+ability skills experience years work working strong excellent knowledge understanding environment
+ensure provide new based world people business customer customers client clients management project
+projects program technology technologies process processes services service solutions solution
+product products organization support related level industry looking
+""".split()  # noqa: SIM905 (a 140-word list literal is harder to read)
+
+
+def cluster_text(
+    title: str | None, description: str | None, company: str | None = None
+) -> str:
+    """Text for role clustering: the title repeated 3x (it names the role) + description."""
+    title = clean_text(title)
+    return f"{title} {title} {title} " + model_text(
+        None, description, company, include_title=False
+    )
+
+
 def make_tfidf(max_features: int = 20_000, min_df: int = 5) -> TfidfVectorizer:
     """TF-IDF over 1-2 word phrases.
 

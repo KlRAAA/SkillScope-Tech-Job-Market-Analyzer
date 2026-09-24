@@ -306,5 +306,244 @@
         ]
       }
     }
+  },
+  "clusters": {
+    "k": 10,
+    "method": "title x3 + description -> TF-IDF -> SVD(100) -> L2 -> KMeans",
+    "explained_variance": 0.17985771596431732,
+    "k_scan": [
+      {
+        "k": 4,
+        "inertia": 7238.380859375,
+        "silhouette": 0.03698094189167023
+      },
+      {
+        "k": 5,
+        "inertia": 7094.51220703125,
+        "silhouette": 0.035858310759067535
+      },
+      {
+        "k": 6,
+        "inertia": 6966.50830078125,
+        "silhouette": 0.039575088769197464
+      },
+      {
+        "k": 7,
+        "inertia": 6842.4404296875,
+        "silhouette": 0.04232609644532204
+      },
+      {
+        "k": 8,
+        "inertia": 6738.751953125,
+        "silhouette": 0.04137473925948143
+      },
+      {
+        "k": 9,
+        "inertia": 6613.54296875,
+        "silhouette": 0.0500352643430233
+      },
+      {
+        "k": 10,
+        "inertia": 6540.6015625,
+        "silhouette": 0.054946739226579666
+      },
+      {
+        "k": 11,
+        "inertia": 6415.220703125,
+        "silhouette": 0.057355087250471115
+      },
+      {
+        "k": 12,
+        "inertia": 6329.1513671875,
+        "silhouette": 0.05742674320936203
+      },
+      {
+        "k": 13,
+        "inertia": 6255.11669921875,
+        "silhouette": 0.06753124296665192
+      },
+      {
+        "k": 14,
+        "inertia": 6176.53173828125,
+        "silhouette": 0.06830330193042755
+      },
+      {
+        "k": 15,
+        "inertia": 6085.4892578125,
+        "silhouette": 0.0728420838713646
+      }
+    ],
+    "clusters": [
+      {
+        "id": 0,
+        "name": "Data Science & ML",
+        "size": 578,
+        "top_terms": [
+          "machine learning",
+          "machine",
+          "ai",
+          "learning",
+          "scientist",
+          "data scientist",
+          "models",
+          "ml",
+          "data science",
+          "science"
+        ]
+      },
+      {
+        "id": 1,
+        "name": "Application Development (Java/.NET/Web)",
+        "size": 1844,
+        "top_terms": [
+          "developer",
+          "java",
+          "web",
+          "using",
+          "net",
+          "applications",
+          "end",
+          "sql",
+          "code",
+          "java developer"
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Software Engineering (Product)",
+        "size": 2094,
+        "top_terms": [
+          "engineer",
+          "engineering",
+          "software engineer",
+          "best",
+          "make",
+          "quality",
+          "life",
+          "senior",
+          "ll",
+          "high"
+        ]
+      },
+      {
+        "id": 3,
+        "name": "IT Support & Help Desk",
+        "size": 409,
+        "top_terms": [
+          "desktop",
+          "desk",
+          "help desk",
+          "specialist",
+          "technician",
+          "hardware",
+          "issues",
+          "troubleshooting",
+          "windows",
+          "help"
+        ]
+      },
+      {
+        "id": 4,
+        "name": "Network & Systems Administration",
+        "size": 700,
+        "top_terms": [
+          "network",
+          "administrator",
+          "network engineer",
+          "engineer",
+          "cisco",
+          "infrastructure",
+          "security",
+          "networking",
+          "administration",
+          "server"
+        ]
+      },
+      {
+        "id": 5,
+        "name": "Data & Business Analysis",
+        "size": 576,
+        "top_terms": [
+          "analyst",
+          "data analyst",
+          "analyst data",
+          "analysis",
+          "reporting",
+          "reports",
+          "analytics",
+          "sql",
+          "data analysis",
+          "systems analyst"
+        ]
+      },
+      {
+        "id": 6,
+        "name": "Software, Cloud & QA Engineering",
+        "size": 2198,
+        "top_terms": [
+          "engineer",
+          "software engineer",
+          "cloud",
+          "devops",
+          "test",
+          "automation",
+          "engineering",
+          "database",
+          "testing",
+          "senior"
+        ]
+      },
+      {
+        "id": 7,
+        "name": "Data Engineering & BI",
+        "size": 606,
+        "top_terms": [
+          "data engineer",
+          "sql",
+          "engineer",
+          "etl",
+          "bi",
+          "analytics",
+          "azure",
+          "snowflake",
+          "engineer data",
+          "power bi"
+        ]
+      },
+      {
+        "id": 8,
+        "name": "Cybersecurity",
+        "size": 507,
+        "top_terms": [
+          "security",
+          "cyber",
+          "cybersecurity",
+          "security engineer",
+          "cyber security",
+          "risk",
+          "vulnerability",
+          "security analyst",
+          "threat",
+          "incident"
+        ]
+      },
+      {
+        "id": 9,
+        "name": "Solutions & Cloud Architecture",
+        "size": 528,
+        "top_terms": [
+          "architect",
+          "architecture",
+          "cloud",
+          "enterprise",
+          "aws",
+          "security",
+          "azure",
+          "cloud architect",
+          "data architect",
+          "architectural"
+        ]
+      }
+    ]
   }
 }

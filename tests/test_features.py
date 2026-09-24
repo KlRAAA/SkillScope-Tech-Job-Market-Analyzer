@@ -184,3 +184,11 @@ def test_full_pipeline_predicts_from_raw_rows():
     )
     assert full.predict(new)[0] in {"Entry", "Senior"}
     assert full.predict_proba(new).shape == (1, 2)
+
+
+def test_cluster_text_repeats_title_and_drops_company():
+    from src.features.text import cluster_text
+
+    text = cluster_text("Data Engineer", "Acme builds ETL pipelines", "Acme")
+    assert text.count("Data Engineer") == 3
+    assert "Acme" not in text

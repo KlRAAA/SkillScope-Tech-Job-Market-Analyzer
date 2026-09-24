@@ -54,7 +54,7 @@ tests/
 - [x] **Phase 3: EDA.** 10–15 charts with takeaways, key findings
 - [x] **Phase 4: Features.** Skills extractor, years/keyword flags, TF-IDF, company-name removal, `src/features/pipeline.py` (build_features + ColumnTransformer + full pipeline)
 - [x] **Phase 5: Seniority classifier.** Baseline, LR/SVM/XGB CV, tuning, with/without title, explainability, error analysis
-- [ ] **Phase 6: Role clustering.** TF-IDF → SVD → KMeans, choose k, name clusters, 2D plot, per-cluster profiles
+- [x] **Phase 6: Role clustering.** TF-IDF → SVD → KMeans, choose k, name clusters, 2D plot, per-cluster profiles
 - [ ] **Phase 7: Streamlit dashboard.** 4 pages, caching, committed sample, deployment steps
 - [ ] **Phase 8: Polish.** README, black/ruff, CI with pytest, interview talking points
 
@@ -74,3 +74,4 @@ tests/
 - Company-name leakage: 54% of descriptions contain their own company name, and some companies label almost all postings one way (TEKsystems 83% Entry, Motion Recruitment 94% Mid). Each posting's company name is removed from its text.
 - Phase 5 (grouped-by-company split, chosen): XGBoost (depth 4, 200 trees, top 3k TF-IDF terms + hand-crafted features) reaches **0.582 test macro F1** vs. a 0.262 baseline (CV 0.575). LR and SVM tie at ~0.54. Without the title: 0.567 test / 0.528 CV. Senior recall is 32% (12/38). Full training takes ~40 min (`python -m src.models.train_classifier`).
 - Custom estimators must live in `src/models/estimators.py`, not in a script run with `-m`. Otherwise they are pickled as `__main__.X` and cannot be loaded (this happened once, and the models were re-saved).
+- Phase 6: 10 role clusters (title ×3 + description → TF-IDF with HR-boilerplate stop words → SVD 100 → L2 → KMeans, `python -m src.models.train_clusters`, ~2 min). Without the boilerplate stop words, 2 clusters formed around equal-opportunity templates. k=10 was chosen for interpretability plus the largest silhouette gain (8 → 10). Silhouette is low (~0.05) and keeps rising to k=15, so there is no natural k. Names are in `CLUSTER_NAMES` with a signature-term check. `models/clusters.joblib` is 7.6 MB.

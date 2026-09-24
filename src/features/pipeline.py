@@ -26,6 +26,7 @@ from sklearn.preprocessing import FunctionTransformer, StandardScaler
 from src.features.skills import skill_matrix
 from src.features.text import (
     KEYWORD_FLAGS,
+    cluster_text,
     extract_years,
     keyword_flags,
     make_tfidf,
@@ -78,6 +79,13 @@ def build_features(
         index=df.index,
     )
     return pd.concat([features, keyword_flags(text), skills], axis=1)
+
+
+def cluster_texts(df: pd.DataFrame) -> list[str]:
+    """Clustering text for each row (title, description[_clean], optional company_name)."""
+    description = df["description"] if "description" in df else df["description_clean"]
+    company = df["company_name"] if "company_name" in df else [None] * len(df)
+    return [cluster_text(t, d, c) for t, d, c in zip(df["title"], description, company)]
 
 
 def skill_columns(features: pd.DataFrame) -> list[str]:

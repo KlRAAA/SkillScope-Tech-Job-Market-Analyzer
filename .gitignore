@@ -22,3 +22,4 @@ Thumbs.db
 data/processed/skills.parquet
 data/processed/features.parquet
 data/processed/seniority_test_predictions.parquet
+data/processed/clusters.parquet

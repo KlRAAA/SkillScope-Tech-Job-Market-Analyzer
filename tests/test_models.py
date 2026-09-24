@@ -50,3 +50,22 @@ def test_saved_model_loads_and_predicts(name):
     proba = bundle["pipeline"].predict_proba(row)
     assert proba.shape == (1, len(bundle["classes"]))
     assert abs(proba.sum() - 1) < 1e-5
+
+
+def test_cluster_model_assigns_named_clusters_from_raw_text():
+    path = Path(__file__).resolve().parents[1] / "models" / "clusters.joblib"
+    if not path.exists():
+        pytest.skip("model not trained")
+    bundle = joblib.load(path)
+    rows = pd.DataFrame(
+        {
+            "title": ["", "Help Desk Technician"],
+            "description": [
+                "Train deep learning models with PyTorch for NLP and LLM research.",
+                "Troubleshoot hardware and Windows issues for end users.",
+            ],
+        }
+    )
+    names = [bundle["names"][c] for c in bundle["pipeline"].predict(rows)]
+    assert names == ["Data Science & ML", "IT Support & Help Desk"]
+    assert len(bundle["names"]) == bundle["k"]
